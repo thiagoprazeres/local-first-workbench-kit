@@ -1,0 +1,208 @@
+# Local-First Workbench Kit — Full Context
+
+## Project Overview
+
+A modular toolkit for prompt protocol execution and local-first workflows. Fase -2.1 release with core packages published to npm.
+
+**Status:** v0.0.1 (pre-stable)
+
+## Core Packages
+
+### @thiagoprazeres/prompt-executor
+
+**Purpose:** Runtime for executing prompt protocols without coupling to a specific LLM provider.
+
+**Key interfaces:**
+- `Prompt` — template + metadata
+- `PromptSource` — loader (memory, file, composite)
+- `Step` — protocol step definition
+- `StepContract` — input/output validation
+- `Session` — execution context
+- `StepResult` — step execution result
+- `Evaluation` — evaluation metrics
+- `ExecutorAdapter` — your LLM adapter interface
+
+**Execution flow:**
+1. Define steps (prompt ID + input)
+2. Load prompt from source
+3. Validate input against contract
+4. Call adapter (you provide LLM call here)
+5. Validate output against contract
+6. Run optional evaluator
+7. Collect result in session
+
+**Zero dependencies.** Provider-agnostic.
+
+**Entry point:** `packages/prompt-executor/src/index.ts`
+
+### @thiagoprazeres/contracts
+
+**Purpose:** Zod schemas for runtime validation across packages.
+
+**Schemas provided:**
+- `PromptSchema` — prompt structure
+- `StepSchema` — step definition
+- `StepResultSchema` — execution result
+- `SessionSchema` — session container
+- `EvaluationSchema` — evaluation metrics
+- `SerializedSessionSchema` — JSON serialization
+
+**Usage:** Validate data at runtime, use inferred types in TypeScript.
+
+**Entry point:** `packages/contracts/src/index.ts`
+
+## Directory Structure
+
+```
+.
+├── packages/
+│   ├── contracts/
+│   │   ├── package.json              (@thiagoprazeres/contracts)
+│   │   ├── tsconfig.json
+│   │   ├── src/
+│   │   │   └── index.ts              (Zod schemas)
+│   │   └── README.md
+│   └── prompt-executor/
+│       ├── package.json              (@thiagoprazeres/prompt-executor)
+│       ├── tsconfig.json
+│       ├── src/
+│       │   ├── index.ts              (public API)
+│       │   ├── types.ts              (7 core types)
+│       │   ├── errors.ts             (4 error classes)
+│       │   ├── session.ts            (session helpers)
+│       │   ├── executor.ts           (core executor)
+│       │   ├── sequence.ts           (sequence runner)
+│       │   ├── sources.ts            (prompt sources)
+│       │   ├── validation.ts         (validator helpers)
+│       │   └── serialization.ts      (JSON ser/de)
+│       ├── test/
+│       │   ├── executor.test.ts      (13 assertions)
+│       │   ├── sequence.test.ts      (2 assertions)
+│       │   ├── sources.test.ts       (4 assertions)
+│       │   ├── serialization.test.ts (3 assertions)
+│       │   └── validation.test.ts    (3 assertions)
+│       ├── README.md
+│       └── CHANGELOG.md
+├── docs/
+│   ├── hugo.toml                     (Hugo config)
+│   └── content/
+│       └── _index.md                 (index)
+├── tsconfig.base.json                (shared config)
+├── pnpm-workspace.yaml               (workspace def)
+├── package.json                      (root workspace)
+├── .editorconfig
+├── .gitignore
+├── .npmrc
+├── README.md                         (this file)
+├── CHANGELOG.md
+├── LICENSE                           (MIT)
+├── llms.txt
+└── llms-full.txt
+
+## Build system
+
+**Runtime:** Node 24.15.0+, pnpm 10.33.0+, TypeScript 6.0.3+
+
+**Scripts at root:**
+- `pnpm build` — Build all packages
+- `pnpm test` — Test all packages
+- `pnpm typecheck` — Typecheck all packages
+- `pnpm clean` — Clean all dist/
+- `pnpm docs:dev` — Start Hugo server
+- `pnpm docs:build` — Build Hugo site
+
+**TypeScript:** ESM, strict mode, Node.js 20.6+ baseline
+
+## Publishing
+
+**npm Organization:** @thiagoprazeres
+
+**Published packages:**
+- `@thiagoprazeres/contracts@0.0.1`
+- `@thiagoprazeres/prompt-executor@0.0.1`
+
+**Access:** Public
+
+## Key design decisions
+
+1. **No cross-package dependencies** — prompt-executor has zero runtime deps, contracts depends only on zod, no circular deps
+2. **Provider-agnostic** — you provide the LLM adapter; executor is just orchestration
+3. **Small API surface** — 20 exports total, minimal footprint
+4. **Schemas as first-class** — contracts package provides validation across consumption boundaries
+5. **Monorepo for coherence** — shared tsconfig, single version number for Fase -2.1
+6. **ESM and strict mode** — modern TypeScript, clean defaults
+
+## What's NOT included
+
+- No prompt library (you bring prompts)
+- No LLM client (you bring adapter)
+- No database layer
+- No MCP server (Fase -2.0)
+- No VS Code extension (Fase -1)
+- No Open WebUI recipes (Fase 0)
+
+## Examples
+
+### Memory-based execution
+
+```typescript
+import { createExecutor, createMemorySource, createSession, runSequence } from '@thiagoprazeres/prompt-executor';
+
+const source = createMemorySource([
+  { id: 'draft', template: 'Draft an email about {{topic}}' },
+  { id: 'review', template: 'Review the draft and provide feedback' },
+]);
+
+const session = await runSequence(
+  [
+    { id: '1', promptId: 'draft', input: { topic: 'Q2 roadmap' } },
+    { id: '2', promptId: 'review' },
+  ],
+  {
+    source,
+    adapter: async ({ prompt, input }) => {
+      // Call Claude or any LLM here
+      const response = await claudeSDK.messages.create({ ... });
+      return { output: response.content[0].text };
+    },
+  }
+);
+```
+
+### With validation
+
+```typescript
+import { StepSchema } from '@thiagoprazeres/contracts';
+
+const step = StepSchema.parse({
+  id: 'step-1',
+  promptId: 'my-prompt',
+  input: { topic: 'test' },
+});
+```
+
+## Testing
+
+All packages have `node --import tsx --test` tests covering:
+- executor behavior
+- sequence execution
+- prompt sources
+- session serialization
+- validation helpers
+
+Total: 25 assertions across 5 test files.
+
+## Versioning
+
+**Semver:** 0.0.1 → 0.1.0 (after API stabilizes) → 1.0.0 (stable)
+
+**Schemaversion:** Independent versioning in serialized sessions (currently `schemaVersion=1`)
+
+## Support & next steps
+
+**Fase -2.1:** Core packages published ✓
+**Fase -2.0:** MCP server for Claude Code
+**Fase -1:** VS Code extension
+**Fase 0:** Open WebUI recipes
+**Fase 1:** Penpot MCP integration
+**Fase 2:** Final workbench application

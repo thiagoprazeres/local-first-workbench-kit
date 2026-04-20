@@ -1,0 +1,49 @@
+# Local-First Workbench Kit
+
+A provider-agnostic toolkit for prompt protocols and local-first workflows.
+
+## Files to read
+
+- README.md — Project overview
+- packages/prompt-executor/README.md — Protocol executor documentation
+- packages/contracts/README.md — Schema documentation
+- CHANGELOG.md — Release notes
+
+## Key entry points
+
+- `packages/prompt-executor/src/index.ts` — Main API surface
+- `packages/contracts/src/index.ts` — Validation schemas
+- `docs/content/_index.md` — Documentation index
+
+## About prompt-executor
+
+Runtime for executing prompt protocols. No LLM client included. You bring the adapter (Anthropic SDK, OpenAI, etc.). Zero dependencies.
+
+## About contracts
+
+Zod schemas for validation. Provides runtime checks for sessions, steps, and evaluations.
+
+## Monorepo structure
+
+- pnpm workspace
+- Shared TypeScript base config
+- Two independent packages:
+  - `@thiagoprazeres/prompt-executor` — Zero-dep executor
+  - `@thiagoprazeres/contracts` — Zod schemas
+
+## Build & test
+
+```bash
+pnpm install
+pnpm build
+pnpm test
+pnpm typecheck
+```
+
+## Version
+
+0.0.1 (Fase -2.1, pre-stable)
+
+## Repository
+
+https://github.com/thiagoprazeres/local-first-workbench-kit
