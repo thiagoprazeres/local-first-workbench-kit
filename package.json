@@ -1,0 +1,30 @@
+{
+  "name": "local-first-workbench-kit",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Local-first workbench kit — monorepo for Fase -2.1.",
+  "license": "MIT",
+  "author": "Thiago Prazeres",
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=20.6",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter \"./packages/*\" run build",
+    "test": "pnpm -r --filter \"./packages/*\" run test",
+    "typecheck": "pnpm -r --filter \"./packages/*\" run typecheck",
+    "clean": "pnpm -r --filter \"./packages/*\" run clean",
+    "docs:dev": "hugo server --source docs",
+    "docs:build": "hugo --source docs --minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thiagoprazeres/local-first-workbench-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thiagoprazeres/local-first-workbench-kit/issues"
+  },
+  "homepage": "https://github.com/thiagoprazeres/local-first-workbench-kit#readme"
+}

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+*.log
+.env
+.env.local
+
+docs/public/
+docs/resources/
+docs/.hugo_build.lock
