@@ -1,0 +1,10 @@
+baseURL = "https://thiagoprazeres.github.io/local-first-workbench-kit/"
+languageCode = "en-us"
+title = "Local-First Workbench Kit"
+theme = "book"
+
+[params]
+  BookTheme = "light"
+  BookToC = true
+  BookRepo = "https://github.com/thiagoprazeres/local-first-workbench-kit"
+  BookEditPath = "edit/main/docs/content"
