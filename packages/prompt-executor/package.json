@@ -1,0 +1,54 @@
+{
+  "name": "@thiagoprazeres/prompt-executor",
+  "version": "0.0.1",
+  "description": "Runtime for executing prompt protocols. Optimized for Opus 4.7 workflows. Does not ship prompts.",
+  "keywords": [
+    "prompt",
+    "prompt-engineering",
+    "executor",
+    "protocol",
+    "session",
+    "workflow",
+    "opus",
+    "claude",
+    "anthropic",
+    "typescript",
+    "esm"
+  ],
+  "license": "MIT",
+  "author": "Thiago Prazeres",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist",
+    "prepack": "pnpm run clean && pnpm run build",
+    "test": "node --import tsx --test test/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "engines": {
+    "node": ">=20.6"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  },
+  "sideEffects": false
+}
